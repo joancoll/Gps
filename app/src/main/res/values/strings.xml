@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Gps</string>
+    <string name="latitude">Latitude:</string>
+    <string name="longitude">Longitude:</string>
+    <string name="locationPermissionNeeded">We need access to your location to know where you are</string>
+    <string name="locationPermissionThanks">You gave access to your location. Thanks!</string>
+    <string name="locationPermissionSettings">You permanently denied access to your location, please enable this permission in your settings to enjoy this app.</string>
+    <string name="positionReady">S\'ha obtingut la posició</string>
+</resources>
