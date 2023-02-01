@@ -7,17 +7,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
     //Members
-    private final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] PERMISSIONS;
     private Button btn_gps;
     private TextView tvLatitude, tvLongitude;
     private GpsTracker gpsTracker;
     private PermissionManager permissionManager;
-    private PermissionRequired permissionRequired;
+    ArrayList<PermissionRequired> permissionsRequired=new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +28,7 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         initPermissions();
         initListeners();
-
-        if (permissionManager.hasAllNeededPermissions(this, PERMISSIONS)) {
-            //mostra la informació del GPS
-            showGPSInfo();
-        }
-        else {
-            permissionManager.hasAllNeededPermissions(this, PERMISSIONS);
-        }
-
+        showGPSInfo();
     }
 
     private void initViews() {
@@ -44,41 +38,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPermissions() {
-        //TO DO: add more permissionsrequires and descriptions if needed
-        permissionRequired = new PermissionRequired(PERMISSIONS[0],
+        //TO DO: CONFIGURE ALL NECESSARY PERMISSIONS
+
+        //BEGIN
+
+        permissionsRequired.add(new PermissionRequired(Manifest.permission.ACCESS_FINE_LOCATION,
                 getString(R.string.locationPermissionNeeded),
                 "",
                 getString(R.string.locationPermissionThanks),
-                getString(R.string.locationPermissionSettings));
-        //call permission manager
-        permissionManager= new PermissionManager(this, permissionRequired);
+                getString(R.string.locationPermissionSettings)));
+
+        //END
+        //DON'T DELETE == call permission manager ==
+        permissionManager= new PermissionManager(this, permissionsRequired);
 
     }
 
     private void initListeners() {
         btn_gps.setOnClickListener(v -> {
-            if (permissionManager.hasAllNeededPermissions(this, PERMISSIONS))
-            {
-                showGPSInfo();
+            if (!permissionManager.hasAllNeededPermissions(this, permissionsRequired))
+            { //Si manquen permisos els demanem
+                permissionManager.askForPermissions(this, permissionManager.getRejectedPermissions(this, permissionsRequired));
             } else {
-                permissionManager.hasAllNeededPermissions(this, PERMISSIONS);
+                //Si ja tenim tots els permisos, mostrem la informació del GPS
+                showGPSInfo();
             }
         });
     }
 
 
     private void showGPSInfo() {
-        gpsTracker = new GpsTracker(MainActivity.this);
-        if (gpsTracker.canGetLocation()) {
-            double latitude = gpsTracker.getLatitude();
-            double longitude = gpsTracker.getLongitude();
-            tvLatitude.setText(String.format(Locale.getDefault(),"%.4f",latitude));
-            tvLongitude.setText(String.format(Locale.getDefault(),"%.4f",longitude));
-            Toast.makeText(MainActivity.this, R.string.positionReady,
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            gpsTracker.showSettingsAlert();
+        if (permissionManager.hasAllNeededPermissions(this, permissionsRequired)) {
+            //mostra la informació del GPS
+            gpsTracker = new GpsTracker(MainActivity.this);
+            if (gpsTracker.canGetLocation()) {
+                double latitude = gpsTracker.getLatitude();
+                double longitude = gpsTracker.getLongitude();
+                tvLatitude.setText(String.format(Locale.getDefault(),"%.4f",latitude));
+                tvLongitude.setText(String.format(Locale.getDefault(),"%.4f",longitude));
+                Toast.makeText(MainActivity.this, R.string.locationReady,
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                gpsTracker.showSettingsAlert();
+            }
         }
     }
-
 }
