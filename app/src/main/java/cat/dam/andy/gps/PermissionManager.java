@@ -18,12 +18,12 @@ public class PermissionManager extends AppCompatActivity {
     public ActivityResultLauncher activityResultLauncher;
 
     // Constructor
-    public PermissionManager(Context context, ArrayList<PermissionRequired> permissionsRequired) {
+    public PermissionManager(Context context, ArrayList<PermissionData> permissionsRequired) {
         // Members
         initPermissionLauncher(context, permissionsRequired);
     }
 
-    private void initPermissionLauncher(Context context, ArrayList<PermissionRequired> permissionsRequired) {
+    private void initPermissionLauncher(Context context, ArrayList<PermissionData> permissionsRequired) {
         //Inicialitza el launcher per demanar permisos
         activityResultLauncher = ((AppCompatActivity) context).registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -92,9 +92,9 @@ public class PermissionManager extends AppCompatActivity {
     }
 
 
-    public boolean hasAllNeededPermissions(Context context, ArrayList<PermissionRequired> permissions) {
+    public boolean hasAllNeededPermissions(Context context, ArrayList<PermissionData> permissions) {
         //comprova que tingui els permisos necessaris
-        for (PermissionRequired permission : permissions) {
+        for (PermissionData permission : permissions) {
             if (!hasPermission(context, permission.getPermission())) {
                 return false;//retorna false si no te tots els permisos concedits
             }
@@ -102,10 +102,10 @@ public class PermissionManager extends AppCompatActivity {
         return true;//retorna true si tots els permisos estan concedits
     }
 
-    public ArrayList<PermissionRequired> getRejectedPermissions(Context context, ArrayList<PermissionRequired> permissions) {
+    public ArrayList<PermissionData> getRejectedPermissions(Context context, ArrayList<PermissionData> permissions) {
         //retorna només els permisos rebutjats
-        ArrayList<PermissionRequired> permissionsRejected = new ArrayList<>();
-        for (PermissionRequired permission : permissions) {
+        ArrayList<PermissionData> permissionsRejected = new ArrayList<>();
+        for (PermissionData permission : permissions) {
             if (!hasPermission(context, permission.getPermission())) {
                 permissionsRejected.add(permission);
             }
@@ -118,7 +118,7 @@ public class PermissionManager extends AppCompatActivity {
         //return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED; //no funciona sense context en classe/fragment
     }
 
-    public void askForPermissions(Context context, ArrayList<PermissionRequired> permissions) {
+    public void askForPermissions(Context context, ArrayList<PermissionData> permissions) {
         //Demana tots els permisos necessaris
         String[] permissionsNamesRejected = new String[permissions.size()];
         for (int i=0; i<permissions.size(); i++) {
@@ -126,7 +126,7 @@ public class PermissionManager extends AppCompatActivity {
         }
         activityResultLauncher.launch(permissionsNamesRejected);
     }
-    public void askOnePermission(Context context, PermissionRequired permission) {
+    public void askOnePermission(Context context, PermissionData permission) {
         //Demana permís necessari
         activityResultLauncher.launch(new String[]{permission.getPermission()});
     }

@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvLatitude, tvLongitude;
     private GpsTracker gpsTracker;
     private PermissionManager permissionManager;
-    ArrayList<PermissionRequired> permissionsRequired=new ArrayList<>();
+    ArrayList<PermissionData> permissionsRequired=new ArrayList<>();
 
 
     @Override
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         //BEGIN
 
-        permissionsRequired.add(new PermissionRequired(Manifest.permission.ACCESS_FINE_LOCATION,
+        permissionsRequired.add(new PermissionData(Manifest.permission.ACCESS_FINE_LOCATION,
                 getString(R.string.locationPermissionNeeded),
                 "",
                 getString(R.string.locationPermissionThanks),
